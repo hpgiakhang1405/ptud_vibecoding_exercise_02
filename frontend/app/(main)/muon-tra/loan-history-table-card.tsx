@@ -6,6 +6,8 @@ import { InboxIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { SelectInput } from "@/components/ui/form";
 import { DataTable, TableCard, TableCell, TableState } from "@/components/ui/table";
+import { formatVietnameseDate } from "@/lib/date";
+import { formatLoanStatusLabel } from "@/lib/format";
 import type { LoanItem, LoanStatus } from "@/lib/types";
 
 import { LoanTimeline } from "./loan-ui";
@@ -98,14 +100,16 @@ export function LoanHistoryTableCard({
                   <p className="mt-1 text-sm text-[var(--gray-600)]">{loan.ten_sach}</p>
                 </div>
                 <span className="inline-flex rounded-full border border-[var(--gray-200)] px-2.5 py-1 text-xs font-medium text-[var(--gray-700)]">
-                  {loan.tinh_trang === "dang_muon" ? "Đang mượn" : "Đã trả"}
+                  {formatLoanStatusLabel(loan.tinh_trang)}
                 </span>
               </div>
 
               <div className="mt-4 grid gap-3 text-sm">
                 <div>
                   <p className="text-[var(--gray-400)]">Ngày mượn</p>
-                  <p className="mt-1 text-[var(--gray-900)]">{loan.ngay_muon}</p>
+                  <p className="mt-1 text-[var(--gray-900)]">
+                    {formatVietnameseDate(loan.ngay_muon)}
+                  </p>
                 </div>
                 <div>
                   <p className="text-[var(--gray-400)]">Timeline</p>
@@ -161,14 +165,14 @@ export function LoanHistoryTableCard({
                 <TableCell>{loan.ho_ten_doc_gia}</TableCell>
                 <TableCell>{loan.ten_sach}</TableCell>
                 <TableCell className="hidden text-[var(--gray-600)] lg:table-cell">
-                  {loan.ngay_muon}
+                  {formatVietnameseDate(loan.ngay_muon)}
                 </TableCell>
                 <TableCell>
                   <LoanTimeline returned={loan.tinh_trang === "da_tra"} />
                 </TableCell>
                 <TableCell>
                   <span className="inline-flex rounded-full border border-[var(--gray-200)] px-2.5 py-1 text-xs font-medium text-[var(--gray-700)]">
-                    {loan.tinh_trang === "dang_muon" ? "Đang mượn" : "Đã trả"}
+                    {formatLoanStatusLabel(loan.tinh_trang)}
                   </span>
                 </TableCell>
                 <TableCell align="right">

@@ -1,5 +1,7 @@
 "use client";
 
+import type { CSSProperties, Ref } from "react";
+
 import { ChevronRightIcon } from "@/components/icons";
 import { cn } from "@/lib/cn";
 
@@ -17,6 +19,8 @@ type DateInputPopoverProps = {
   viewMonth: Date;
   minValue?: string;
   maxValue?: string;
+  containerRef?: Ref<HTMLDivElement>;
+  style?: CSSProperties;
   onPreviousMonth: () => void;
   onNextMonth: () => void;
   onSelectDate: (date: Date) => void;
@@ -27,6 +31,8 @@ export function DateInputPopover({
   viewMonth,
   minValue,
   maxValue,
+  containerRef,
+  style,
   onPreviousMonth,
   onNextMonth,
   onSelectDate,
@@ -35,11 +41,16 @@ export function DateInputPopover({
   const daysInMonth = getDaysInMonth(viewMonth);
 
   return (
-    <div className="absolute left-0 top-[calc(100%+0.5rem)] z-30 w-[19rem] overflow-hidden rounded-[20px] border border-[var(--gray-200)] bg-white p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)]">
+    <div
+      ref={containerRef}
+      className="overflow-hidden rounded-[20px] border border-[var(--gray-200)] bg-white p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)]"
+      style={style}
+    >
       <div className="mb-3 flex items-center justify-between">
         <button
           type="button"
           className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--gray-500)] transition-colors hover:bg-[var(--gray-50)]"
+          onMouseDown={(event) => event.preventDefault()}
           onClick={onPreviousMonth}
         >
           <ChevronRightIcon className="h-4 w-4 rotate-180" />
@@ -50,6 +61,7 @@ export function DateInputPopover({
         <button
           type="button"
           className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--gray-500)] transition-colors hover:bg-[var(--gray-50)]"
+          onMouseDown={(event) => event.preventDefault()}
           onClick={onNextMonth}
         >
           <ChevronRightIcon className="h-4 w-4" />
@@ -87,6 +99,7 @@ export function DateInputPopover({
                 disabled ? "cursor-not-allowed opacity-35 hover:bg-transparent" : undefined,
               )}
               disabled={disabled}
+              onMouseDown={(event) => event.preventDefault()}
               onClick={() => onSelectDate(date)}
             >
               {day}

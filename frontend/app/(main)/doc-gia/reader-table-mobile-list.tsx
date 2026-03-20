@@ -3,6 +3,8 @@
 import { InboxIcon, PlusIcon } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatVietnameseDate } from "@/lib/date";
+import { formatGenderLabel } from "@/lib/format";
 import type { ReaderRecord } from "@/lib/types";
 
 type ReaderTableMobileListProps = {
@@ -74,11 +76,15 @@ export function ReaderTableMobileList({
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
             <div>
               <dt className="text-[var(--gray-400)]">Ngày sinh</dt>
-              <dd className="mt-1 text-[var(--gray-900)]">{item.ngay_sinh}</dd>
+              <dd className="mt-1 text-[var(--gray-900)]">
+                {formatVietnameseDate(item.ngay_sinh)}
+              </dd>
             </div>
             <div>
               <dt className="text-[var(--gray-400)]">Giới tính</dt>
-              <dd className="mt-1 capitalize text-[var(--gray-900)]">{item.gioi_tinh}</dd>
+              <dd className="mt-1 text-[var(--gray-900)]">
+                {formatGenderLabel(item.gioi_tinh)}
+              </dd>
             </div>
           </dl>
 

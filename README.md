@@ -13,6 +13,7 @@
 - [Biến môi trường](#biến-môi-trường)
 - [Các lệnh thường dùng](#các-lệnh-thường-dùng)
 - [Luồng khởi tạo database](#luồng-khởi-tạo-database)
+- [Generate dữ liệu test](#generate-dữ-liệu-test)
 - [Ghi chú phát triển](#ghi-chú-phát-triển)
 
 ## Tính năng chính
@@ -60,6 +61,8 @@ ptud_vibecoding_exercise_02/
 │   ├── .env.example
 │   ├── .flake8
 │   ├── alembic.ini
+│   ├── scripts/
+│   │   └── generate_test_data.py
 │   ├── main.py
 │   └── requirements.txt
 └── frontend/
@@ -214,6 +217,9 @@ cd backend
 # chạy migration
 alembic upgrade head
 
+# generate dữ liệu test thực tế
+venv\Scripts\python.exe scripts\generate_test_data.py --reset
+
 # format code
 black app
 
@@ -262,6 +268,46 @@ alembic upgrade head
 ```
 
 4. Sau khi backend khởi động, tài khoản admin mặc định sẽ được tạo nếu chưa có.
+
+## Generate dữ liệu test
+
+Project có sẵn script seed dữ liệu thực tế tại:
+
+```text
+backend/scripts/generate_test_data.py
+```
+
+Script này tạo dữ liệu mẫu cho:
+
+1. Chuyên ngành
+2. Đầu sách
+3. Bản sao sách
+4. Độc giả
+5. Tài khoản thủ thư
+6. Phiếu mượn đang mượn
+7. Phiếu mượn đã trả
+
+Luồng chạy khuyến nghị:
+
+```bash
+cd backend
+alembic upgrade head
+venv\Scripts\python.exe scripts\generate_test_data.py --reset
+```
+
+Ví dụ generate dataset lớn hơn để test:
+
+```bash
+venv\Scripts\python.exe scripts\generate_test_data.py --reset --readers 200 --staff 6 --active-loans 40 --returned-loans 180 --copies-min 2 --copies-max 5
+```
+
+Một số lưu ý:
+
+- Script sẽ dừng lại nếu database đã có dữ liệu nghiệp vụ và bạn chưa truyền `--reset`.
+- `--reset` sẽ xóa dữ liệu nghiệp vụ cũ rồi generate lại, nhưng vẫn giữ tài khoản admin mặc định.
+- Tài khoản admin mặc định vẫn lấy từ `backend/.env`.
+- Mật khẩu mặc định của các tài khoản thủ thư mới là `Test@123`, có thể đổi bằng `--user-password`.
+- Nên dùng `venv\Scripts\python.exe` để tránh lệch môi trường Python local.
 
 ## Ghi chú phát triển
 

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { SelectInput } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, TableCard, TableCell, TableState } from "@/components/ui/table";
+import { formatVietnameseDate } from "@/lib/date";
 import type { BookCopy, BookTitle } from "@/lib/types";
 
 type BookCopyTableCardProps = {
@@ -97,7 +98,9 @@ export function BookCopyTableCard({
                 </div>
                 <Badge tone={copy.tinh_trang} />
               </div>
-              <p className="mt-3 text-sm text-[var(--gray-600)]">Ngày nhập: {copy.ngay_nhap}</p>
+              <p className="mt-3 text-sm text-[var(--gray-600)]">
+                Ngày nhập: {formatVietnameseDate(copy.ngay_nhap)}
+              </p>
               <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                 <Button
                   variant="secondary"
@@ -148,7 +151,7 @@ export function BookCopyTableCard({
                 <TableCell className="font-semibold">{copy.ma_sach}</TableCell>
                 <TableCell>{copy.ten_dau_sach}</TableCell>
                 <TableCell className="hidden text-[var(--gray-600)] lg:table-cell">
-                  {copy.ngay_nhap}
+                  {formatVietnameseDate(copy.ngay_nhap)}
                 </TableCell>
                 <TableCell>
                   <Badge tone={copy.tinh_trang} />

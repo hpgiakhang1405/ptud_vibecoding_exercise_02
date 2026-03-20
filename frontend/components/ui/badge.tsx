@@ -1,6 +1,13 @@
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
+import {
+  formatAccountStatusLabel,
+  formatCopyStatusLabel,
+  formatLoanStatusLabel,
+  formatReaderStatusLabel,
+  formatRoleLabel,
+} from "@/lib/format";
 
 export type BadgeTone =
   | "active"
@@ -34,18 +41,6 @@ const toneClass: Record<BadgeTone, string> = {
     "border border-violet-200 bg-violet-50/90 text-violet-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]",
 };
 
-const toneLabel: Record<BadgeTone, string> = {
-  active: "Đang hoạt động",
-  san_sang: "Sẵn sàng",
-  thu_thu: "Thủ thư",
-  dang_muon: "Đang mượn",
-  da_tra: "Đã trả",
-  inactive: "Ngừng hoạt động",
-  hong: "Hỏng",
-  admin: "Quản trị viên",
-  locked: "Bị khóa",
-};
-
 const toneDotClass: Record<BadgeTone, string> = {
   active: "bg-emerald-500",
   san_sang: "bg-emerald-500",
@@ -59,7 +54,26 @@ const toneDotClass: Record<BadgeTone, string> = {
 };
 
 export function getBadgeLabel(tone: BadgeTone) {
-  return toneLabel[tone];
+  switch (tone) {
+    case "active":
+      return formatReaderStatusLabel("active");
+    case "locked":
+      return formatReaderStatusLabel("locked");
+    case "inactive":
+      return formatAccountStatusLabel("inactive");
+    case "admin":
+      return formatRoleLabel("admin");
+    case "thu_thu":
+      return formatRoleLabel("thu_thu");
+    case "dang_muon":
+      return formatLoanStatusLabel("dang_muon");
+    case "da_tra":
+      return formatLoanStatusLabel("da_tra");
+    case "san_sang":
+      return formatCopyStatusLabel("san_sang");
+    case "hong":
+      return formatCopyStatusLabel("hong");
+  }
 }
 
 export function Badge({

@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TextInput } from "@/components/ui/form";
 import { DataTable, TableCard, TableCell, TableState } from "@/components/ui/table";
+import { formatVietnameseDate } from "@/lib/date";
+import { formatGenderLabel } from "@/lib/format";
 import type { ReaderRecord } from "@/lib/types";
 
 import { ReaderTableMobileList } from "./reader-table-mobile-list";
@@ -90,10 +92,10 @@ export function ReaderTableCard({
                   {item.lop}
                 </TableCell>
                 <TableCell className="hidden text-[var(--gray-600)] lg:table-cell">
-                  {item.ngay_sinh}
+                  {formatVietnameseDate(item.ngay_sinh)}
                 </TableCell>
-                <TableCell className="hidden text-[var(--gray-600)] capitalize lg:table-cell">
-                  {item.gioi_tinh}
+                <TableCell className="hidden text-[var(--gray-600)] lg:table-cell">
+                  {formatGenderLabel(item.gioi_tinh)}
                 </TableCell>
                 <TableCell>
                   <Badge tone={item.trang_thai === "active" ? "active" : "locked"} />

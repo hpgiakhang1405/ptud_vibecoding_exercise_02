@@ -1,3 +1,5 @@
+import { formatVietnameseDate } from "@/lib/date";
+import { formatGenderLabel, formatReaderStatusLabel } from "@/lib/format";
 import type { ReaderRecord } from "@/lib/types";
 
 export function printReaderCard(item: ReaderRecord) {
@@ -92,9 +94,9 @@ export function printReaderCard(item: ReaderRecord) {
           <div class="title">${escapeHtml(item.ho_ten)}</div>
           <div class="meta">
             <div><strong>Lop</strong>${escapeHtml(item.lop)}</div>
-            <div><strong>Ngay sinh</strong>${escapeHtml(item.ngay_sinh)}</div>
-            <div><strong>Gioi tinh</strong>${escapeHtml(item.gioi_tinh)}</div>
-            <div><strong>Trang thai</strong>${escapeHtml(item.trang_thai)}</div>
+            <div><strong>Ngay sinh</strong>${escapeHtml(formatVietnameseDate(item.ngay_sinh))}</div>
+            <div><strong>Gioi tinh</strong>${escapeHtml(formatGenderLabel(item.gioi_tinh))}</div>
+            <div><strong>Trang thai</strong>${escapeHtml(formatReaderStatusLabel(item.trang_thai))}</div>
           </div>
           <div class="code">${escapeHtml(item.ma_doc_gia)}</div>
         </div>

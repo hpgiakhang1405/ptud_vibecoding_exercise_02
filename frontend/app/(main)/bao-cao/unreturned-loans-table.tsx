@@ -2,6 +2,7 @@
 
 import { InboxIcon, ReceiptIcon } from "@/components/icons";
 import { DataTable, TableCard, TableCell, TableState } from "@/components/ui/table";
+import { formatVietnameseDate } from "@/lib/date";
 import type { UnreturnedLoanItem } from "@/lib/types";
 
 type UnreturnedLoansTableProps = {
@@ -98,7 +99,9 @@ export function UnreturnedLoansTable({
                   </div>
                   <div>
                     <dt className="text-[var(--gray-400)]">Ngày mượn</dt>
-                    <dd className="mt-1 text-[var(--gray-900)]">{item.ngay_muon}</dd>
+                    <dd className="mt-1 text-[var(--gray-900)]">
+                      {formatVietnameseDate(item.ngay_muon)}
+                    </dd>
                   </div>
                 </div>
               </dl>
@@ -144,7 +147,7 @@ export function UnreturnedLoansTable({
                 <TableCell>{item.ten_dau_sach}</TableCell>
                 <TableCell className="font-semibold">{item.ma_sach}</TableCell>
                 <TableCell className="hidden text-[var(--gray-600)] lg:table-cell">
-                  {item.ngay_muon}
+                  {formatVietnameseDate(item.ngay_muon)}
                 </TableCell>
                 <TableCell className="font-semibold">
                   {getBorrowedDays(item.ngay_muon)}

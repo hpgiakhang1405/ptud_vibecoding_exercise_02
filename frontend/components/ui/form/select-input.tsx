@@ -8,13 +8,17 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type CSSProperties,
   type ReactNode,
   type SelectHTMLAttributes,
 } from "react";
+import { createPortal } from "react-dom";
 
 import { ChevronRightIcon } from "@/components/icons";
 import { cn } from "@/lib/cn";
 import type { SelectOption } from "@/lib/types";
+
+import { useDismissibleLayer } from "./use-dismissible-layer";
 
 type SelectInputProps = SelectHTMLAttributes<HTMLSelectElement> & {
   error?: string;
@@ -32,7 +36,10 @@ export function SelectInput({
   ...props
 }: SelectInputProps) {
   const [open, setOpen] = useState(false);
+  const [portalStyle, setPortalStyle] = useState<CSSProperties>();
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const options = useMemo<SelectOption[]>(
     () =>
@@ -60,25 +67,48 @@ export function SelectInput({
       return;
     }
 
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!wrapperRef.current?.contains(event.target as Node)) {
-        setOpen(false);
+    const updatePosition = () => {
+      const trigger = triggerRef.current;
+      if (!trigger) {
+        return;
       }
+
+      const rect = trigger.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownMaxHeight = 256;
+      const spacing = 8;
+      const spaceBelow = viewportHeight - rect.bottom - spacing;
+      const spaceAbove = rect.top - spacing;
+      const shouldOpenUp = spaceBelow < 220 && spaceAbove > spaceBelow;
+      const maxHeight = Math.max(
+        160,
+        Math.min(dropdownMaxHeight, shouldOpenUp ? spaceAbove : spaceBelow),
+      );
+
+      setPortalStyle({
+        left: rect.left,
+        top: shouldOpenUp
+          ? Math.max(spacing, rect.top - spacing - maxHeight)
+          : rect.bottom + spacing,
+        width: rect.width,
+        maxHeight,
+      });
     };
 
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
-
-    window.addEventListener("mousedown", handlePointerDown);
-    window.addEventListener("keydown", handleEscape);
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
     return () => {
-      window.removeEventListener("mousedown", handlePointerDown);
-      window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
     };
   }, [open]);
+
+  useDismissibleLayer({
+    open,
+    refs: [wrapperRef, dropdownRef],
+    onDismiss: () => setOpen(false),
+  });
 
   function selectOption(nextValue: string) {
     onChange?.({
@@ -105,6 +135,7 @@ export function SelectInput({
       </select>
 
       <button
+        ref={triggerRef}
         type="button"
         className={cn(
           "ui-select flex items-center justify-between gap-3 text-left",
@@ -125,36 +156,43 @@ export function SelectInput({
         />
       </button>
 
-      {open ? (
-        <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 overflow-hidden rounded-[18px] border border-[var(--gray-200)] bg-white p-2 shadow-[0_22px_50px_rgba(15,23,42,0.14)]">
-          <div className="max-h-64 overflow-auto">
-            {options.map((option) => {
-              const isSelected = option.value === selectedValue;
+      {open && portalStyle
+        ? createPortal(
+            <div
+              ref={dropdownRef}
+              className="fixed z-[80] overflow-hidden rounded-[18px] border border-[var(--gray-200)] bg-white p-2 shadow-[0_22px_50px_rgba(15,23,42,0.14)]"
+              style={portalStyle}
+            >
+              <div className="overflow-auto" style={{ maxHeight: portalStyle.maxHeight }}>
+                {options.map((option) => {
+                  const isSelected = option.value === selectedValue;
 
-              return (
-                <button
-                  key={`${option.value}-${String(option.label)}`}
-                  type="button"
-                  className={cn(
-                    "flex w-full items-center justify-between rounded-[14px] px-3 py-2.5 text-left text-sm transition-colors",
-                    isSelected
-                      ? "bg-[var(--primary-light)] text-[var(--primary)]"
-                      : "text-[var(--gray-700)] hover:bg-[var(--gray-50)]",
-                    option.disabled ? "cursor-not-allowed opacity-50" : undefined,
-                  )}
-                  disabled={option.disabled}
-                  onClick={() => selectOption(option.value)}
-                >
-                  <span>{option.label}</span>
-                  {isSelected ? (
-                    <span className="h-2.5 w-2.5 rounded-full bg-[var(--primary)]" />
-                  ) : null}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
+                  return (
+                    <button
+                      key={`${option.value}-${String(option.label)}`}
+                      type="button"
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-[14px] px-3 py-2.5 text-left text-sm transition-colors",
+                        isSelected
+                          ? "bg-[var(--primary-light)] text-[var(--primary)]"
+                          : "text-[var(--gray-700)] hover:bg-[var(--gray-50)]",
+                        option.disabled ? "cursor-not-allowed opacity-50" : undefined,
+                      )}
+                      disabled={option.disabled}
+                      onClick={() => selectOption(option.value)}
+                    >
+                      <span>{option.label}</span>
+                      {isSelected ? (
+                        <span className="h-2.5 w-2.5 rounded-full bg-[var(--primary)]" />
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }
